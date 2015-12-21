@@ -1,0 +1,1 @@
+java -classpath target\FileEncrypt-1.0-SNAPSHOT.jar tools.fileencrypt.App %*
