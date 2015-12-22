@@ -1,5 +1,7 @@
 package tools.fileencrypt;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import javax.crypto.*;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
@@ -20,6 +22,8 @@ import java.util.Random;
  *
  */
 public class App {
+    private static final Logger logger = LoggerFactory.getLogger(App.class);
+
     private static final String ALGORITHM_KEYSPEC = "AES";
     private static final String ALGORITHM_CIPHER = "AES/CBC/PKCS5Padding";
     private static final String ENCRYPT_IV = "abcdefghijklmnop";
@@ -30,19 +34,7 @@ public class App {
         App app = new App();
         try {
             app.execute(args);
-        } catch (InvalidKeyException e) {
-            e.printStackTrace();
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        } catch (NoSuchPaddingException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (InvalidAlgorithmParameterException e) {
-            e.printStackTrace();
-        } catch (IllegalBlockSizeException e) {
-            e.printStackTrace();
-        } catch (BadPaddingException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -100,6 +92,7 @@ public class App {
                     .limit(1)                           // 上限1つにする（逆順にしているから、最後の1つ）
                     .toArray(Path[]::new);               // 配列に変換する
 
+        logger.info("use password file -> "+passwordFiles[0].getFileName());
         return passwordFiles[0];
     }
 
@@ -113,7 +106,6 @@ public class App {
         Path passwordFile = null;
         for (int loop=0; loop<999; loop++) {
             Path p = Paths.get(passwordDirectory.toString(), String.format("password_%s%03d.txt", today, loop+1));
-            System.out.println(p.toString());
 
             // ファイルがなければそれを採用
             if (Files.notExists(p)) {
@@ -124,6 +116,7 @@ public class App {
         if (passwordFile==null) {
             return null;
         }
+        logger.info("create password file -> "+passwordFile.getFileName());
 
         // パスワードの生成
         byte[] passwordBytes = new byte[KEY_LENGTH/8];
